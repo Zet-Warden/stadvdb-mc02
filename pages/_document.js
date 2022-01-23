@@ -23,6 +23,7 @@ class MyDocument extends Document {
                 <body className="font-body bg-gray-300 min-h-screen">
                     <Main />
                     <NextScript />
+                    <div id="modal-root"></div>;
                 </body>
             </Html>
         );

@@ -1,4 +1,4 @@
-import query from '../../utils/query';
+import query from '/utils/query';
 
 async function getAllMovieData(req, res) {
     const data = await query(`

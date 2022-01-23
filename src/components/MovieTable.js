@@ -1,65 +1,98 @@
+import ReactDOM from 'react-dom';
+import { useState } from 'react';
 import EditButton from '../icons/edit.svg';
 import DeleteButton from '../icons/delete.svg';
-import { useEffect, useState } from 'react';
+import SortButton from '../icons/sort.svg';
 import Image from 'next/image';
+import MovieModal from './MovieModal';
+
+const modalRoot = process.browser
+    ? document.querySelector('#modal-root')
+    : null;
 
 function MovieTable({ movies }) {
     return (
         <table className="w-full h-full">
-            <tr>
-                <th>Picture</th>
-                <th className="text-left">Movie Title</th>
-                <th>Rating</th>
-                <th>Year</th>
-            </tr>
-            {movies &&
-                movies.map((movie, index) => (
+            <thead>
+                <tr>
+                    <th className="text-xl">Picture</th>
+                    <th className="text-xl text-left">
+                        <div className="flex gap-1">
+                            Movie Title{' '}
+                            <SortButton className="cursor-pointer" />
+                        </div>
+                    </th>
+                    <th className="text-xl">
+                        <div className="flex justify-center gap-1">
+                            Rating <SortButton className="cursor-pointer" />
+                        </div>
+                    </th>
+                    <th className="text-xl">
+                        <div className="flex justify-center gap-1">
+                            Year <SortButton className="cursor-pointer" />
+                        </div>
+                    </th>
+                    <th className="sr-only">Edit and Delete Buttons</th>
+                </tr>
+            </thead>
+            <tbody>
+                {movies.map((movie, index) => (
                     <MovieRow
                         key={movie.id}
                         info={movie}
                         isEven={index % 2 === 0}
                     />
                 ))}
+            </tbody>
         </table>
     );
 }
 
 function MovieRow({ info, isEven }) {
-    const [image, setImage] = useState('');
+    const [showModal, setShowModal] = useState(false);
+    const className = 'px-4 text-lg cursor-pointer hover:bg-gray-300';
 
-    useEffect(() => {
-        const safeTitle = encodeURI(info.title);
-        console.log(safeTitle);
-        fetch(`http://www.omdbapi.com/?apikey=f94a33eb&s=${safeTitle}`)
-            .then((response) => response.json())
-            .then((data) => {
-                if (data.Response === 'False') {
-                    return setImage('');
-                }
-                const imgURL = data?.Search[0]?.Poster || '';
-                if (imgURL === 'N/A') {
-                    return setImage('');
-                }
-                setImage(imgURL);
-            });
-    }, [info.title]);
+    const handleClick = () => {
+        setShowModal(!showModal);
+    };
 
-    const className = 'px-4 text-lg cursor-pointer';
+    const removeModal = () => {
+        setShowModal(false);
+    };
+
     return (
-        <tr className={isEven ? `bg-blue-100 ${className}` : className}>
-            <td className="w-[20%] text-center m-auto flex items-stretch h-full">
-                <img src={image || '/favicon.svg'} alt="movie poster" />
-            </td>
-            <td className="w-[50%] text-left">{info.title}</td>
-            <td className="w-[10%] text-center">{info.rating || 'N/A'}</td>
-            <td className="w-[10%] text-center">{info.year}</td>
-            <td>
-                <div className="flex justify-end gap-2 pr-5">
-                    <EditButton />
-                    <DeleteButton />
-                </div>
-            </td>
-        </tr>
+        <>
+            <tr
+                className={isEven ? `bg-blue-100 ${className}` : className}
+                onClick={handleClick}
+            >
+                <td className="w-[20%] text-center m-auto flex items-stretch">
+                    <Image
+                        src={`https://api.lorem.space/image/movie?w=300&h=440&x=${info.title}`}
+                        alt="movie poster"
+                        width={150}
+                        height={220}
+                    />
+                </td>
+                <td className="w-[50%] text-left">{info.title}</td>
+                <td className="w-[10%] text-center">{info.rating || 'N/A'}</td>
+                <td className="w-[10%] text-center">{info.year}</td>
+                <td>
+                    <div className="flex justify-end gap-2 pr-5">
+                        <EditButton />
+                        <DeleteButton />
+                    </div>
+                </td>
+            </tr>
+            {showModal ? (
+                ReactDOM.createPortal(
+                    <MovieModal info={info} removeModal={removeModal} />,
+                    modalRoot
+                )
+            ) : (
+                <></>
+            )}
+        </>
     );
 }
 

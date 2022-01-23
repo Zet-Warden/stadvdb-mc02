@@ -7,7 +7,7 @@ module.exports = {
         dbQuery: executeQuery,
     },
     images: {
-        domains: ['m.media-amazon.com'],
+        domains: ['m.media-amazon.com', 'api.lorem.space'],
     },
 
     webpack(config) {

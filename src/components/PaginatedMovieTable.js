@@ -6,7 +6,7 @@ import PreviousButton from '../icons/previous.svg';
 
 function PaginatedMovieTable({ moviesPerPage }) {
     const { movies, isLoading } = useMovies();
-    const [currentMovies, setCurrentItems] = useState(null);
+    const [currentMovies, setCurrentItems] = useState([]);
     const [pageCount, setPageCount] = useState(0);
     const [itemOffset, setItemOffset] = useState(0);
 
