@@ -2,17 +2,13 @@ import query from '../../utils/query';
 
 async function getAllMovieData(req, res) {
     const data = await query(`
-    SELECT movies.id, movies.rank, movies.year, movies_genres.genre, directors.first_name, directors.last_name, actors.first_name, actors.last_name
-    FROM movies
-    JOIN movies_genres on movies_genres.movie_id = movies.id
-    JOIN movies_directors on movies_directors.director_id = movies.id
-    JOIN directors on directors.id = movies_directors.director_id
-    JOIN roles on roles.movie_id = movies.id
-    JOIN actors on roles.actor_id = actors.id
-    LIMIT 100000`);
+    select movies.id as id, movies.name as title, movies.rank as rating, movies.year
+    from movies 
+    where movies.rank is not null
+    limit 200;`);
 
-    // console.log(data[0]);
-    res.json(data[0]);
+    const movies = data[0];
+    res.json(movies);
 }
 
 export default getAllMovieData;
