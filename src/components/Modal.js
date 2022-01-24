@@ -1,12 +1,14 @@
+import { useEffect } from 'react';
 import CloseButton from '../icons/x.svg';
 
 function Modal({ children, removeModal }) {
+    useEffect(() => {
+        console.log('hello');
+    });
+
     return (
         // modal container
-        <div
-            className="absolute top-[3.5rem] inset-0 bg-[#50505040]"
-            onClick={removeModal}
-        >
+        <div className="fixed inset-0 bg-[#50505040]" onClick={removeModal}>
             {/* modal backdrop */}
             <div className="h-full flex justify-center items-center">
                 <div

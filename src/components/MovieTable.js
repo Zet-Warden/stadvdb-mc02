@@ -15,19 +15,19 @@ function MovieTable({ movies }) {
         <table className="w-full h-full">
             <thead>
                 <tr>
-                    <th className="text-xl">Picture</th>
-                    <th className="text-xl text-left">
+                    <th className="text-2xl">Picture</th>
+                    <th className="text-2xl text-left">
                         <div className="flex gap-1">
                             Movie Title{' '}
                             <SortButton className="cursor-pointer" />
                         </div>
                     </th>
-                    <th className="text-xl">
+                    <th className="text-2xl">
                         <div className="flex justify-center gap-1">
                             Rating <SortButton className="cursor-pointer" />
                         </div>
                     </th>
-                    <th className="text-xl">
+                    <th className="text-2xl">
                         <div className="flex justify-center gap-1">
                             Year <SortButton className="cursor-pointer" />
                         </div>
@@ -50,7 +50,7 @@ function MovieTable({ movies }) {
 
 function MovieRow({ info, isEven }) {
     const [showModal, setShowModal] = useState(false);
-    const className = 'px-4 text-lg cursor-pointer hover:bg-gray-300';
+    const className = 'px-4 text-xl cursor-pointer hover:bg-gray-300';
 
     const handleClick = () => {
         setShowModal(!showModal);
@@ -66,13 +66,15 @@ function MovieRow({ info, isEven }) {
                 className={isEven ? `bg-blue-100 ${className}` : className}
                 onClick={handleClick}
             >
-                <td className="w-[20%] text-center m-auto flex items-stretch">
-                    <Image
-                        src={`https://api.lorem.space/image/movie?w=300&h=440&x=${info.title}`}
-                        alt="movie poster"
-                        width={150}
-                        height={220}
-                    />
+                <td className="w-[20%] text-center">
+                    <div className="flex justify-center align-bottom">
+                        <Image
+                            src={`https://api.lorem.space/image/movie?w=300&h=440&x=${info.title}`}
+                            alt="movie poster"
+                            width={150 * 0.5}
+                            height={220 * 0.5}
+                        />
+                    </div>
                 </td>
                 <td className="w-[50%] text-left">{info.title}</td>
                 <td className="w-[10%] text-center">{info.rating || 'N/A'}</td>

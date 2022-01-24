@@ -5,7 +5,7 @@ import Modal from '../src/components/Modal';
 export default function Home() {
     return (
         <>
-            <header>
+            <header className="relative z-10">
                 <NavBar />
             </header>
             <main className="flex justify-center min-h-[calc(100vh-3.5rem)]">
