@@ -10,7 +10,7 @@ const pool = mysql.createPool({
     queueLimit: 0,
 });
 
-console.log('connected!');
+console.log('connected to database!');
 
 async function executeQuery(query) {
     return new Promise((resolve, reject) => {

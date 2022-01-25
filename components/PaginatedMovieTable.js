@@ -3,6 +3,7 @@ import ReactPaginate from 'react-paginate';
 import useMovies from '../hooks/useMovies';
 import MovieTable from './MovieTable';
 import PreviousButton from '../icons/previous.svg';
+import Spinner from './Spinner';
 
 function PaginatedMovieTable({ moviesPerPage }) {
     const { movies, isLoading } = useMovies();
@@ -19,7 +20,11 @@ function PaginatedMovieTable({ moviesPerPage }) {
     }, [movies, isLoading, itemOffset, moviesPerPage]);
 
     if (isLoading) {
-        return <p>is loading...</p>;
+        return (
+            <div className="flex justify-center items-center h-full">
+                <Spinner />
+            </div>
+        );
     }
 
     // Invoke when user click to request another page.
