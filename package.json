@@ -2,7 +2,7 @@
     "name": "stadvdb-mc02",
     "private": true,
     "scripts": {
-        "dev": "concurrently \"npx localtunnel --port 3000 --subdomain stadvdb-mc02-node1\" \"next dev\"",
+        "dev": "concurrently \"npx localtunnel --port 3000 --subdomain stadvdb-mco2-node1\" \"next dev\"",
         "build": "next build",
         "start": "next start",
         "lint": "next lint"

@@ -1,6 +1,5 @@
 import NavBar from '../components/NavBar';
 import PaginatedMovieTable from '../components/PaginatedMovieTable';
-import Modal from '../components/Modal';
 
 export default function Home() {
     return (

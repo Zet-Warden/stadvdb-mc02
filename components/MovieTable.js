@@ -49,6 +49,7 @@ function MovieTable({ movies }) {
 }
 
 function MovieRow({ info, isEven }) {
+    const [random, setRandom] = useState((Math.random() * 15) | 0);
     const [showModal, setShowModal] = useState(false);
     const className = 'px-4 text-xl cursor-pointer hover:bg-gray-300';
 
@@ -69,9 +70,7 @@ function MovieRow({ info, isEven }) {
                 <td className="w-[20%] text-center">
                     <div className="flex justify-center align-bottom">
                         <Image
-                            src={`https://api.lorem.space/image/movie?w=300&h=440&x=${
-                                (Math.random() * 15) | 0
-                            }`}
+                            src={`https://api.lorem.space/image/movie?w=300&h=440&x=${info.title}`}
                             alt="movie poster"
                             width={150 * 0.5}
                             height={220 * 0.5}
@@ -89,7 +88,7 @@ function MovieRow({ info, isEven }) {
                     </div>
                 </td>
             </tr>
-            {showModal ? (
+            {false ? (
                 ReactDOM.createPortal(
                     <MovieModal info={info} removeModal={removeModal} />,
                     modalRoot
