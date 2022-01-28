@@ -5,9 +5,7 @@ async function getMovieInfoByID(req, res) {
     const data = await query(`
     select movies.id as id, movies.name as title, movies.rank as rating, movies.year
     from movies 
-    where movies.rank is not null
-    limit 200;
-    where movies.id = ${movieID};`);
+    where movies.rank is not null && movies.id = ${movieID};`);
 
     const movies = data[0];
     res.json(movies);

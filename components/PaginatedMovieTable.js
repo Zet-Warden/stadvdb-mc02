@@ -6,18 +6,23 @@ import PreviousButton from '../icons/previous.svg';
 import Spinner from './Spinner';
 
 function PaginatedMovieTable({ moviesPerPage }) {
-    const { movies, isLoading } = useMovies();
-    const [currentMovies, setCurrentItems] = useState([]);
+    const { movies: moviesData, isLoading } = useMovies();
+    const [movies, setMovies] = useState([]);
+    const [currentMovies, setCurrentMovies] = useState([]);
     const [pageCount, setPageCount] = useState(0);
     const [itemOffset, setItemOffset] = useState(0);
 
     useEffect(() => {
         if (!isLoading) {
-            const endOffset = itemOffset + moviesPerPage;
-            setCurrentItems(movies.slice(itemOffset, endOffset));
-            setPageCount(Math.ceil(movies.length / moviesPerPage));
+            setMovies(moviesData);
         }
-    }, [movies, isLoading, itemOffset, moviesPerPage]);
+    }, [moviesData, isLoading]);
+
+    useEffect(() => {
+        const endOffset = itemOffset + moviesPerPage;
+        setCurrentMovies(movies.slice(itemOffset, endOffset));
+        setPageCount(Math.ceil(movies.length / moviesPerPage));
+    }, [movies, itemOffset, moviesPerPage]);
 
     if (isLoading) {
         return (
@@ -33,9 +38,53 @@ function PaginatedMovieTable({ moviesPerPage }) {
         setItemOffset(newOffset);
     };
 
+    const createMovieComparator = (isAscending, field) => {
+        const order = isAscending ? -1 : 1;
+
+        return (a, b) => {
+            //sorts by string
+            if (typeof a[field] === 'string') {
+                var first = a[field].toLowerCase().trim();
+                var second = b[field].toLowerCase().trim();
+
+                if (first < second) {
+                    return -1 * order;
+                } else if (second < first) {
+                    return 1 * order;
+                }
+                return 0;
+            }
+            //sorts by number
+            else {
+                var first = a[field];
+                var second = b[field];
+            }
+            return (first - second) * order;
+        };
+    };
+
+    const createSortFunction = (field) => {
+        return (isAscending) => {
+            const moviesCopy = [...movies];
+            console.log(moviesCopy);
+            moviesCopy.sort(createMovieComparator(isAscending, field));
+            console.log(moviesCopy);
+            setMovies(moviesCopy);
+        };
+    };
+
+    const sortByTitle = createSortFunction('title');
+    const sortByRating = createSortFunction('rating');
+    const sortByYear = createSortFunction('year');
+
     return (
         <>
-            <MovieTable movies={currentMovies} />
+            <MovieTable
+                movies={currentMovies}
+                handleTitleSort={sortByTitle}
+                handleRatingSort={sortByRating}
+                handleYearSort={sortByYear}
+            />
             <ReactPaginate
                 breakLabel={'...'}
                 marginPagesDisplayed={0}
