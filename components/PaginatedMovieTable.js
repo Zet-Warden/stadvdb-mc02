@@ -39,7 +39,7 @@ function PaginatedMovieTable({ moviesPerPage }) {
     };
 
     const createMovieComparator = (isAscending, field) => {
-        const order = isAscending ? -1 : 1;
+        const order = isAscending ? 1 : -1;
 
         return (a, b) => {
             //sorts by string
