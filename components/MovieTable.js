@@ -7,7 +7,10 @@ function MovieTable({
     handleTitleSort,
     handleRatingSort,
     handleYearSort,
+    handleChangeData,
+    handleDeleteData,
 }) {
+    console.log('rerender', movies);
     return (
         <table className="w-full h-full">
             <thead>
@@ -40,6 +43,8 @@ function MovieTable({
                         key={movie.id}
                         info={movie}
                         isEven={index % 2 === 0}
+                        handleChangeData={handleChangeData}
+                        handleDeleteData={handleDeleteData}
                     />
                 ))}
             </tbody>

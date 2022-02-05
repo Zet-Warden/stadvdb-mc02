@@ -1,4 +1,4 @@
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 const DB_CONFIG = {
     port: process.env.DB_PORT,
     user: process.env.USER,
@@ -27,21 +27,26 @@ const pool3 = mysql.createPool({
 console.log('connected to database!');
 
 async function executeQuery(query) {
-    return new Promise((resolve, reject) => {
-        pool2.query(query, function (err, rows, fields) {
+    const conn = await pool1.getConnection();
+
+    try {
+        await conn.query('start transaction;');
+        var result = await conn.query(query);
+        await conn.query('commit;');
+        conn.release();
+
+        return result;
+    } catch (err) {
+        await conn.query('rollback;');
+        console.log(err);
+    }
+
+    /* return new Promise((resolve, reject) => {
+        pool1.query(query, function (err, rows, fields) {
             if (err) return reject(err);
             resolve([rows, fields]);
         });
-    });
+    }); */
 }
-
-(async function () {
-    const data = await executeQuery('select * from movie_change_events;');
-    console.log(data[0][0].event_timestamp);
-    console.log(new Date(data[0][0].event_timestamp).getTime());
-    console.log(new Date(data[0][1].event_timestamp).getTime());
-    console.log(new Date(data[0][2].event_timestamp).getTime());
-    console.log(new Date(data[0][3].event_timestamp).getTime());
-})();
 
 module.exports = executeQuery;

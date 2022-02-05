@@ -11,4 +11,43 @@ async function getMovieInfoByID(req, res) {
     res.json(movies);
 }
 
-export default getMovieInfoByID;
+async function postMovieInfoByID(req, res) {
+    const { title, year, rating, id } = req.body;
+    try {
+        await query(`
+            update movies
+            set name = '${title}',
+            year = ${year},
+            \`rank\` = ${rating}
+            where id = ${id}; `);
+
+        res.json({ msg: 'Data updated' });
+    } catch (err) {
+        res.status(500).json({ msg: 'Data not updated' });
+    }
+}
+
+async function deleteMovieInfoByID(req, res) {
+    const { id } = req.body;
+    try {
+        await query(`
+            delete from movies
+            where id = ${id}; `);
+
+        res.json({ msg: 'Data deleted' });
+    } catch (err) {
+        res.status(500).json({ msg: 'Data not deleted' });
+    }
+}
+
+async function handler(req, res) {
+    if (req.method === 'GET') {
+        await getMovieInfoByID(req, res);
+    } else if (req.method === 'POST') {
+        await postMovieInfoByID(req, res);
+    } else if (req.method === 'DELETE') {
+        await deleteMovieInfoByID(req, res);
+    }
+}
+
+export default handler;

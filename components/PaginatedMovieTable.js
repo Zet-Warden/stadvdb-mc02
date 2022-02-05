@@ -68,7 +68,6 @@ function PaginatedMovieTable({ moviesPerPage }) {
             const moviesCopy = [...movies];
             console.log(moviesCopy);
             moviesCopy.sort(createMovieComparator(isAscending, field));
-            console.log(moviesCopy);
             setMovies(moviesCopy);
         };
     };
@@ -77,6 +76,30 @@ function PaginatedMovieTable({ moviesPerPage }) {
     const sortByRating = createSortFunction('rating');
     const sortByYear = createSortFunction('year');
 
+    const editDatabaseData = (data) => {
+        fetch(`/api/movies/${data.id}`, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        setMovies((movies) =>
+            movies.map((movie) => (movie.id === data.id ? data : movie))
+        );
+    };
+
+    const deleteDatabaseData = (data) => {
+        fetch(`/api/movies/${data.id}`, {
+            method: 'DELETE',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        setMovies((movies) => movies.filter((movie) => movie.id !== data.id));
+    };
+
     return (
         <>
             <MovieTable
@@ -84,6 +107,8 @@ function PaginatedMovieTable({ moviesPerPage }) {
                 handleTitleSort={sortByTitle}
                 handleRatingSort={sortByRating}
                 handleYearSort={sortByYear}
+                handleChangeData={editDatabaseData}
+                handleDeleteData={deleteDatabaseData}
             />
             <ReactPaginate
                 breakLabel={'...'}
