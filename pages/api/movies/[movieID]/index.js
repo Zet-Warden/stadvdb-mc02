@@ -16,7 +16,7 @@ async function postMovieInfoByID(req, res) {
     try {
         await query(`
             update movies
-            set name = '${title}',
+            set name = '${title.replaceAll("'", "\\'").replaceAll('"', '\\"')}',
             year = ${year},
             \`rank\` = ${rating}
             where id = ${id}; `);
