@@ -2,11 +2,13 @@ import query from '/utils/query';
 
 async function getMovieInfoByID(req, res) {
     const { movieID } = req.query;
+    console.log('hjello');
     const data = await query(`
     select movies.id as id, movies.name as title, movies.rank as rating, movies.year
     from movies 
     where movies.rank is not null && movies.id = ${movieID};`);
 
+    console.log(data[0]);
     const movies = data[0];
     res.json(movies);
 }

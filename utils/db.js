@@ -27,26 +27,46 @@ const pool3 = mysql.createPool({
 console.log('connected to database!');
 
 async function executeQuery(query) {
-    const conn = await pool1.getConnection();
+    // var result = [];
+    // const conn = await pool2.getConnection();
+    // await conn.query('start transaction;');
+    // const result = await conn.query(query);
+    // await conn.query('commit');
+    // console.log(result[0]);
+    // return result;
+
+    let result1 = [];
+    let result2 = [];
+    let result3 = [];
+    let data;
 
     try {
-        await conn.query('start transaction;');
-        var result = await conn.query(query);
-        await conn.query('commit;');
-        conn.release();
+        const conn1 = await pool1.getConnection();
+        await conn1.query('start transaction;');
+        data = await conn1.query(query);
+        await conn1.query('commit;');
+        conn1.release();
+        result1 = result1.concat(data);
 
-        return result;
+        return [result1[0]];
     } catch (err) {
-        await conn.query('rollback;');
-        console.log(err);
+        const conn2 = await pool2.getConnection();
+        await conn2.query('start transaction;');
+        data = await conn2.query(query);
+        await conn2.query('commit;');
+        conn2.release();
+        result2 = result2.concat(data);
+
+        const conn3 = await pool3.getConnection();
+        await conn3.query('start transaction;');
+        data = await conn3.query(query);
+        await conn3.query('commit;');
+        conn3.release();
+        result3 = result3.concat(data);
     }
 
-    /* return new Promise((resolve, reject) => {
-        pool1.query(query, function (err, rows, fields) {
-            if (err) return reject(err);
-            resolve([rows, fields]);
-        });
-    }); */
+    // console.log([[...result2[0], ...result3[0]]]);
+    return [[...result2[0], ...result3[0]]];
 }
 
 module.exports = executeQuery;
