@@ -50,19 +50,32 @@ async function executeQuery(query) {
 
         return [result1[0]];
     } catch (err) {
-        const conn2 = await pool2.getConnection();
-        await conn2.query('start transaction;');
-        data = await conn2.query(query);
-        await conn2.query('commit;');
-        conn2.release();
-        result2 = result2.concat(data);
+        console.log('NODE 1 ERROR:');
+        console.log(err);
 
-        const conn3 = await pool3.getConnection();
-        await conn3.query('start transaction;');
-        data = await conn3.query(query);
-        await conn3.query('commit;');
-        conn3.release();
-        result3 = result3.concat(data);
+        try {
+            const conn2 = await pool2.getConnection();
+            await conn2.query('start transaction;');
+            data = await conn2.query(query);
+            await conn2.query('commit;');
+            conn2.release();
+            result2 = result2.concat(data);
+        } catch (err) {
+            console.log('NODE 2 ERROR: ');
+            console.log(err);
+        }
+
+        try {
+            const conn3 = await pool3.getConnection();
+            await conn3.query('start transaction;');
+            data = await conn3.query(query);
+            await conn3.query('commit;');
+            conn3.release();
+            result3 = result3.concat(data);
+        } catch (err) {
+            console.log('NODE 3 ERROR: ');
+            console.log(err);
+        }
     }
 
     // console.log([[...result2[0], ...result3[0]]]);
