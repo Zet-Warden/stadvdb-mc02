@@ -4,7 +4,7 @@ const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 function useMovies() {
     const { data, error } = useSWR('/api/movies', fetcher, {
-        refreshInterval: 10000,
+        refreshInterval: 100,
     });
 
     return {
