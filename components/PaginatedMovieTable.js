@@ -1,9 +1,16 @@
+import ReactDOM from 'react-dom';
 import { useEffect, useState } from 'react';
 import ReactPaginate from 'react-paginate';
 import useMovies from '../hooks/useMovies';
 import MovieTable from './MovieTable';
 import PreviousButton from '../icons/previous.svg';
 import Spinner from './Spinner';
+import AddMovieModal from './AddMovieModal';
+const { v4: uuidv4 } = require('uuid');
+
+const modalRoot = process.browser
+    ? document.querySelector('#modal-root')
+    : null;
 
 function PaginatedMovieTable({ moviesPerPage }) {
     const { movies: moviesData, isLoading } = useMovies();
@@ -78,7 +85,7 @@ function PaginatedMovieTable({ moviesPerPage }) {
 
     const editDatabaseData = (data) => {
         fetch(`/api/movies/${data.id}`, {
-            method: 'POST',
+            method: 'PUT',
             body: JSON.stringify(data),
             headers: {
                 'Content-Type': 'application/json',
@@ -100,6 +107,19 @@ function PaginatedMovieTable({ moviesPerPage }) {
         setMovies((movies) => movies.filter((movie) => movie.id !== data.id));
     };
 
+    const insertDatabaseData = (data) => {
+        data.id = uuidv4(); //create id
+
+        fetch(`/api/movies/`, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        setMovies([data, ...movies]);
+    };
+
     return (
         <>
             <MovieTable
@@ -110,6 +130,7 @@ function PaginatedMovieTable({ moviesPerPage }) {
                 handleChangeData={editDatabaseData}
                 handleDeleteData={deleteDatabaseData}
             />
+            <AddMovieButton handleInsertData={insertDatabaseData} />
             <ReactPaginate
                 breakLabel={'...'}
                 marginPagesDisplayed={0}
@@ -133,6 +154,43 @@ function PaginatedMovieTable({ moviesPerPage }) {
                 breakClassName="w-12 aspect-square text-center border border-solid border-gray-400"
                 breakLinkClassName="flex justify-center items-center w-full h-full"
             />
+        </>
+    );
+}
+
+function AddMovieButton({ handleInsertData }) {
+    const [showForm, setShowForm] = useState(false);
+
+    const removeModal = () => {
+        setShowForm(false);
+    };
+
+    return (
+        <>
+            <div
+                className="absolute flex item-center justify-center top-14 right-10  w-16 h-16 bg-[#00618A] rounded-full cursor-pointer hover:brightness-125"
+                onClick={() => {
+                    setShowForm((showForm) => !showForm);
+                }}
+            >
+                <span
+                    className="absolute top-1/2 -translate-y-1/2 text-white text-5xl
+                "
+                >
+                    +
+                </span>
+            </div>
+            {showForm ? (
+                ReactDOM.createPortal(
+                    <AddMovieModal
+                        removeModal={removeModal}
+                        handleInsertData={handleInsertData}
+                    />,
+                    modalRoot
+                )
+            ) : (
+                <></>
+            )}
         </>
     );
 }

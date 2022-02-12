@@ -1,5 +1,19 @@
 import query from '/utils/query';
 
+async function postMovieInfo(req, res) {
+    const { title, year, rating, id } = req.body;
+    try {
+        await query(`
+             insert into movies values ('${id}', '${title
+            .replaceAll("'", "\\'")
+            .replaceAll('"', '\\"')}', ${year}, ${rating})`);
+
+        res.json({ msg: 'Data inserted' });
+    } catch (err) {
+        res.status(500).json({ msg: 'Data not inserted' });
+    }
+}
+
 async function getAllMovieData(req, res) {
     try {
         const data = await query(`
@@ -15,4 +29,12 @@ async function getAllMovieData(req, res) {
     }
 }
 
-export default getAllMovieData;
+async function handler(req, res) {
+    if (req.method === 'GET') {
+        await getAllMovieData(req, res);
+    } else if (req.method === 'POST') {
+        await postMovieInfo(req, res);
+    }
+}
+
+export default handler;

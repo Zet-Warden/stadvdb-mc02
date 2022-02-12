@@ -12,7 +12,6 @@ function MovieRow({
     handleChangeData,
     handleDeleteData,
 }) {
-    console.log(info);
     const className = 'px-4 text-xl cursor-pointer hover:bg-gray-300';
     const [isEditing, setIsEditing] = useState(false);
     const [currentTitle, setCurrentTitle] = useState();

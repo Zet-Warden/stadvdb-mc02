@@ -8,7 +8,7 @@ export default function Home() {
                 <NavBar />
             </header>
             <main className="flex justify-center min-h-[calc(100vh-3.5rem)]">
-                <section className="container bg-white flex flex-col p-10">
+                <section className="container relative bg-white flex flex-col p-10">
                     <h1 className="text-5xl font-black text-center py-5">
                         IMDb Movies
                     </h1>

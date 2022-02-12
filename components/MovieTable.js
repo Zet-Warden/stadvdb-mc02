@@ -10,7 +10,6 @@ function MovieTable({
     handleChangeData,
     handleDeleteData,
 }) {
-    console.log('rerender', movies);
     return (
         <table className="w-full h-full">
             <thead>
