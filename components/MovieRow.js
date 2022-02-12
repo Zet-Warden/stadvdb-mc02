@@ -18,6 +18,10 @@ function MovieRow({
     const [currentRating, setCurrentRating] = useState();
     const [currentYear, setCurrentYear] = useState();
 
+    const [previousTitle, setPreviousTitle] = useState();
+    const [previousRating, setPreviousRating] = useState();
+    const [previousYear, setPreviousYear] = useState();
+
     useEffect(() => {
         setCurrentTitle(info.title);
         setCurrentRating(info.rating);
@@ -25,7 +29,18 @@ function MovieRow({
     }, [info.title, info.rating, info.year]);
 
     const toggleEditing = () => {
+        setPreviousTitle(currentTitle);
+        setPreviousRating(currentRating);
+        setPreviousYear(currentYear);
         setIsEditing((isEditing) => !isEditing);
+    };
+
+    const cancelEditing = () => {
+        setCurrentTitle(previousTitle);
+        setCurrentRating(previousRating);
+        setCurrentYear(previousYear);
+
+        setIsEditing(false);
     };
 
     const editData = () => {
@@ -137,7 +152,7 @@ function MovieRow({
                             />
                             <CancelButton
                                 className="w-8 hover:fill-red-600"
-                                onClick={toggleEditing}
+                                onClick={cancelEditing}
                             />
                         </>
                     )}
