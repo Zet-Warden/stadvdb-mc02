@@ -46,7 +46,10 @@ function AddMovieModal({ removeModal, handleInsertData }) {
             <form
                 className="flex flex-col gap-4 text-2xl"
                 id="form"
-                onSubmit={insertData}
+                onSubmit={(evt) => {
+                    insertData(evt);
+                    removeModal();
+                }}
             >
                 <div>
                     <label className="block" htmlFor="title">
