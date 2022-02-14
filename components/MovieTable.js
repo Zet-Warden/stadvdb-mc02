@@ -11,7 +11,7 @@ function MovieTable({
     handleDeleteData,
 }) {
     return (
-        <table className="w-full h-full">
+        <table className="w-full  max-h-min">
             <thead>
                 <tr>
                     <th className="text-2xl">Picture</th>
