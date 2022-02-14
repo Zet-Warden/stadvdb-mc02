@@ -26,39 +26,22 @@ const pool3 = mysql.createPool({
 
 console.log('connected to database!');
 
-async function executeQuery(query) {
-    // var result = [];
-    // const conn = await pool2.getConnection();
-    // await conn.query('start transaction;');
-    // const result = await conn.query(query);
-    // await conn.query('commit');
-    // console.log(result[0]);
-    // return result;
-
+async function query(query) {
     let result1 = [];
     let result2 = [];
     let result3 = [];
     let data;
 
     try {
-        const conn1 = await pool1.getConnection();
-        await conn1.query('start transaction;');
-        data = await conn1.query(query);
-        await conn1.query('commit;');
-        conn1.release();
+        data = await executeQuery('NODE 1', query);
         result1 = result1.concat(data);
-
         return [result1[0]];
     } catch (err) {
         console.log('NODE 1 ERROR:');
         console.log(err);
 
         try {
-            const conn2 = await pool2.getConnection();
-            await conn2.query('start transaction;');
-            data = await conn2.query(query);
-            await conn2.query('commit;');
-            conn2.release();
+            data = await executeQuery('NODE 2', query);
             result2 = result2.concat(data);
         } catch (err) {
             console.log('NODE 2 ERROR: ');
@@ -66,11 +49,7 @@ async function executeQuery(query) {
         }
 
         try {
-            const conn3 = await pool3.getConnection();
-            await conn3.query('start transaction;');
-            data = await conn3.query(query);
-            await conn3.query('commit;');
-            conn3.release();
+            data = await executeQuery('NODE 3', query);
             result3 = result3.concat(data);
         } catch (err) {
             console.log('NODE 3 ERROR: ');
@@ -83,4 +62,70 @@ async function executeQuery(query) {
     ];
 }
 
-module.exports = executeQuery;
+async function insertQuery(query, { year }) {
+    try {
+        await executeQuery('NODE 1', query);
+    } catch (err) {
+        console.log('NODE 1 ERROR:');
+        console.log(err);
+
+        if (year < 1980) {
+            console.log('EXECUTING IN NODE 2');
+            try {
+                await executeQuery('NODE 2', query);
+            } catch (err) {
+                console.log('NODE 2 ERROR: ');
+                console.log(err);
+                console.log('EXECUTING IN NODE 3');
+
+                try {
+                    await executeQuery('NODE 3', query);
+                } catch (err) {
+                    console.log('NODE 3 error');
+                    console.log(err);
+                }
+            }
+        } else {
+            console.log('EXECUTING IN NODE 3');
+            try {
+                await executeQuery('NODE 3', query);
+            } catch (err) {
+                console.log('NODE 3 ERROR: ');
+                console.log(err);
+                console.log('EXECUTING IN NODE 2');
+
+                try {
+                    await executeQuery('NODE 2', query);
+                } catch (err) {
+                    console.log('NODE 2 error');
+                    console.log(err);
+                }
+            }
+        }
+    }
+}
+
+async function executeQuery(node, query) {
+    const conn = await getNodeConnection(node);
+    await conn.query('start transaction;');
+    const data = await conn.query(query);
+    await conn.query('commit;');
+    conn.release();
+
+    return [data[0]];
+}
+
+async function getNodeConnection(node) {
+    switch (node) {
+        case 'NODE 1':
+            return await pool1.getConnection();
+        case 'NODE 2':
+            return await pool2.getConnection();
+        case 'NODE 3':
+            return await pool3.getConnection();
+        default:
+            throw `Node: ${node} specified cannot be identified. `;
+    }
+}
+
+module.exports = { query, insertQuery };
