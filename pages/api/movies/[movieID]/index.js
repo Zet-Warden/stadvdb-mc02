@@ -1,8 +1,8 @@
-import query from '/utils/query';
+import queryObj from '/utils/query';
+const { query } = queryObj;
 
 async function getMovieInfoByID(req, res) {
     const { movieID } = req.query;
-    console.log('hjello');
     const data = await query(`
     select movies.id as id, movies.name as title, movies.rank as rating, movies.year
     from movies 
@@ -16,12 +16,14 @@ async function getMovieInfoByID(req, res) {
 async function putMovieInfoByID(req, res) {
     const { title, year, rating, id } = req.body;
     try {
-        await query(`
+        await query(
+            `
             update movies
             set name = '${title.replaceAll("'", "\\'").replaceAll('"', '\\"')}',
             year = ${year},
             \`rank\` = ${rating}
-            where id = '${id}'; `);
+            where id = '${id}'; `
+        );
 
         res.json({ msg: 'Data updated' });
     } catch (err) {
