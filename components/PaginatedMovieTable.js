@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useLayoutEffect } from 'react';
 import ReactPaginate from 'react-paginate';
 import useMovies from '../hooks/useMovies';
 import MovieTable from './MovieTable';
@@ -18,33 +18,10 @@ function PaginatedMovieTable({ moviesPerPage }) {
     const [currentMovies, setCurrentMovies] = useState([]);
     const [pageCount, setPageCount] = useState(0);
     const [itemOffset, setItemOffset] = useState(0);
+    const [searchFilter, setSearchFilter] = useState('');
+    const [sortFilter, setSortFilter] = useState(null);
 
-    useEffect(() => {
-        if (!isLoading) {
-            setMovies(moviesData);
-        }
-    }, [moviesData, isLoading]);
-
-    useEffect(() => {
-        const endOffset = itemOffset + moviesPerPage;
-        setCurrentMovies(movies.slice(itemOffset, endOffset));
-        setPageCount(Math.ceil(movies.length / moviesPerPage));
-    }, [movies, itemOffset, moviesPerPage]);
-
-    if (isLoading) {
-        return (
-            <div className="flex justify-center items-center h-full">
-                <Spinner />
-            </div>
-        );
-    }
-
-    // Invoke when user click to request another page.
-    const handlePageClick = (event) => {
-        const newOffset = (event.selected * moviesPerPage) % movies.length;
-        setItemOffset(newOffset);
-    };
-
+    //#region sorting
     const createMovieComparator = (isAscending, field) => {
         const order = isAscending ? 1 : -1;
 
@@ -71,17 +48,62 @@ function PaginatedMovieTable({ moviesPerPage }) {
     };
 
     const createSortFunction = (field) => {
-        return (isAscending) => {
+        return function sortFunction(isAscending) {
             const moviesCopy = [...movies];
-            console.log(moviesCopy);
             moviesCopy.sort(createMovieComparator(isAscending, field));
             setMovies(moviesCopy);
+            setSortFilter({ isAscending, sortFunction, field });
         };
     };
 
     const sortByTitle = createSortFunction('title');
     const sortByRating = createSortFunction('rating');
     const sortByYear = createSortFunction('year');
+    //#endregion
+
+    useEffect(() => {
+        const endOffset = itemOffset + moviesPerPage;
+        setCurrentMovies(movies.slice(itemOffset, endOffset));
+        setPageCount(Math.ceil(movies.length / moviesPerPage));
+    }, [movies, itemOffset, moviesPerPage]);
+
+    useEffect(() => {
+        if (moviesData) {
+            setMovies(() => {
+                const filteredMovie = moviesData.filter((movie) =>
+                    movie.title.toLowerCase().includes(searchFilter)
+                );
+                if (sortFilter) {
+                    return filteredMovie.sort(
+                        createMovieComparator(
+                            sortFilter.isAscending,
+                            sortFilter.field
+                        )
+                    );
+                }
+                return filteredMovie;
+            });
+        }
+    }, [searchFilter, moviesData]);
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center h-full">
+                <Spinner />
+            </div>
+        );
+    }
+
+    // Invoke when user click to request another page.
+    const handlePageClick = (event) => {
+        const newOffset = (event.selected * moviesPerPage) % movies.length;
+        setItemOffset(newOffset);
+    };
+
+    const filterSearch = (evt) => {
+        // console.log(evt.target.value);
+        setSearchFilter(evt.target.value);
+    };
 
     const editDatabaseData = (data) => {
         fetch(`/api/movies/${data.id}`, {
@@ -121,7 +143,12 @@ function PaginatedMovieTable({ moviesPerPage }) {
     };
 
     return (
-        <>
+        <div className="flex flex-col h-full">
+            <input
+                type="search"
+                className=" w-1/2 border border-black ml-auto mr-auto mb-8"
+                onChange={filterSearch}
+            />
             <MovieTable
                 movies={currentMovies}
                 handleTitleSort={sortByTitle}
@@ -143,7 +170,7 @@ function PaginatedMovieTable({ moviesPerPage }) {
                 previousLabel={
                     <PreviousButton className="w-8 aspect-square absolute right-2 top-1/2 -translate-y-1/2" />
                 }
-                className="flex justify-center"
+                className="flex justify-center mt-auto"
                 activeClassName="bg-blue-300"
                 pageClassName="relative w-12 aspect-square text-center border border-solid border-gray-400"
                 pageLinkClassName="flex justify-center items-center w-full h-full"
@@ -154,7 +181,7 @@ function PaginatedMovieTable({ moviesPerPage }) {
                 breakClassName="w-12 aspect-square text-center border border-solid border-gray-400"
                 breakLinkClassName="flex justify-center items-center w-full h-full"
             />
-        </>
+        </div>
     );
 }
 
