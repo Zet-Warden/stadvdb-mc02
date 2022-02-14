@@ -78,8 +78,9 @@ async function executeQuery(query) {
         }
     }
 
-    // console.log([[...result2[0], ...result3[0]]]);
-    return [[...result2[0], ...result3[0]]];
+    return [
+        [...(result2[0] ? result2[0] : []), ...(result3[0] ? result3[0] : [])],
+    ];
 }
 
 module.exports = executeQuery;
