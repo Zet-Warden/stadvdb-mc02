@@ -6,6 +6,7 @@ import MovieTable from './MovieTable';
 import PreviousButton from '../icons/previous.svg';
 import Spinner from './Spinner';
 import AddMovieModal from './AddMovieModal';
+import Loading from './Loading';
 const { v4: uuidv4 } = require('uuid');
 
 const modalRoot = process.browser
@@ -20,6 +21,7 @@ function PaginatedMovieTable({ moviesPerPage }) {
     const [itemOffset, setItemOffset] = useState(0);
     const [searchFilter, setSearchFilter] = useState('');
     const [sortFilter, setSortFilter] = useState(null);
+    const [isUpdating, setIsUpdating] = useState(false);
 
     //#region sorting
     const createMovieComparator = (isAscending, field) => {
@@ -83,6 +85,7 @@ function PaginatedMovieTable({ moviesPerPage }) {
                 }
                 return filteredMovie;
             });
+            setIsUpdating(false);
         }
     }, [searchFilter, moviesData]);
 
@@ -113,9 +116,10 @@ function PaginatedMovieTable({ moviesPerPage }) {
                 'Content-Type': 'application/json',
             },
         });
-        setMovies((movies) =>
-            movies.map((movie) => (movie.id === data.id ? data : movie))
-        );
+        setIsUpdating(true);
+        // setMovies((movies) =>
+        //     movies.map((movie) => (movie.id === data.id ? data : movie))
+        // );
     };
 
     const deleteDatabaseData = (data) => {
@@ -126,7 +130,8 @@ function PaginatedMovieTable({ moviesPerPage }) {
                 'Content-Type': 'application/json',
             },
         });
-        setMovies((movies) => movies.filter((movie) => movie.id !== data.id));
+        setIsUpdating(true);
+        // setMovies((movies) => movies.filter((movie) => movie.id !== data.id));
     };
 
     const insertDatabaseData = (data) => {
@@ -139,7 +144,8 @@ function PaginatedMovieTable({ moviesPerPage }) {
                 'Content-Type': 'application/json',
             },
         });
-        setMovies([data, ...movies]);
+        setIsUpdating(true);
+        // setMovies([data, ...movies]);
     };
 
     return (
@@ -181,6 +187,7 @@ function PaginatedMovieTable({ moviesPerPage }) {
                 breakClassName="w-12 aspect-square text-center border border-solid border-gray-400"
                 breakLinkClassName="flex justify-center items-center w-full h-full"
             />
+            {isUpdating ? <Loading /> : <></>}
         </div>
     );
 }
