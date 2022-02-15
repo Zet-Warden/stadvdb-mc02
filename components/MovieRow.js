@@ -105,7 +105,7 @@ function MovieRow({
                         <input
                             type="text"
                             className="w-full text-center"
-                            value={currentRating || 'N/A'}
+                            value={currentRating}
                             onChange={changeRating}
                         />
                     </td>
