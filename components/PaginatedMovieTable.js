@@ -85,7 +85,7 @@ function PaginatedMovieTable({ moviesPerPage }) {
                 }
                 return filteredMovie;
             });
-            setIsUpdating(false);
+            // setIsUpdating(false);
         }
     }, [searchFilter, moviesData]);
 
@@ -116,10 +116,10 @@ function PaginatedMovieTable({ moviesPerPage }) {
                 'Content-Type': 'application/json',
             },
         });
-        setIsUpdating(true);
-        // setMovies((movies) =>
-        //     movies.map((movie) => (movie.id === data.id ? data : movie))
-        // );
+        // setIsUpdating(true);
+        setMovies((movies) =>
+            movies.map((movie) => (movie.id === data.id ? data : movie))
+        );
     };
 
     const deleteDatabaseData = (data) => {
@@ -130,8 +130,8 @@ function PaginatedMovieTable({ moviesPerPage }) {
                 'Content-Type': 'application/json',
             },
         });
-        setIsUpdating(true);
-        // setMovies((movies) => movies.filter((movie) => movie.id !== data.id));
+        // setIsUpdating(true);
+        setMovies((movies) => movies.filter((movie) => movie.id !== data.id));
     };
 
     const insertDatabaseData = (data) => {
@@ -144,8 +144,8 @@ function PaginatedMovieTable({ moviesPerPage }) {
                 'Content-Type': 'application/json',
             },
         });
-        setIsUpdating(true);
-        // setMovies([data, ...movies]);
+        // setIsUpdating(true);
+        setMovies([data, ...movies]);
     };
 
     return (
@@ -187,7 +187,7 @@ function PaginatedMovieTable({ moviesPerPage }) {
                 breakClassName="w-12 aspect-square text-center border border-solid border-gray-400"
                 breakLinkClassName="flex justify-center items-center w-full h-full"
             />
-            {isUpdating ? <Loading /> : <></>}
+            {/* {isUpdating ? <Loading /> : <></>} */}
         </div>
     );
 }

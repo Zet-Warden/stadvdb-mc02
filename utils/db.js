@@ -107,12 +107,22 @@ async function insertQuery(query, { year }) {
 
 async function executeQuery(node, query) {
     const conn = await getNodeConnection(node);
-    await conn.query('start transaction;');
-    const data = await conn.query(query);
-    await conn.query('commit;');
-    conn.release();
 
-    return [data[0]];
+    try {
+        await conn.query('start transaction;');
+        const data = await conn.query(query);
+        await conn.query('select sleep(69);');
+        await conn.query('commit;');
+        conn.release();
+        return [data[0]];
+    } catch (err) {
+        if (err.errno === 1205) {
+            //lock time out error
+            return await executeQuery(node, query);
+        } else {
+            throw err;
+        }
+    }
 }
 
 async function getNodeConnection(node) {
