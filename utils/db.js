@@ -111,7 +111,7 @@ async function executeQuery(node, query) {
     try {
         await conn.query('start transaction;');
         const data = await conn.query(query);
-        await conn.query('select sleep(69);');
+        // await conn.query('select sleep(69);');
         await conn.query('commit;');
         conn.release();
         return [data[0]];
